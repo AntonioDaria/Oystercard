@@ -28,5 +28,17 @@ subject(:oystercard) { described_class.new }
       oystercard.top_up(limit)
       expect { oystercard.top_up 1 }.to raise_error "Cannot exceed £90!"
     end
+
+    describe '#pay_fare' do
+      it 'responds to pay_fare' do
+        expect(oystercard).to respond_to(:pay_fare).with(1).argument
+      end
+
+      it "deducts money" do
+        oystercard.top_up(10)
+        expect { oystercard.pay_fare 5 }.to change{ oystercard.balance}.by -5 
+      end
+    end
   end
+
 end
