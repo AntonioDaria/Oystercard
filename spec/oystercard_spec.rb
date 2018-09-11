@@ -2,8 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
   subject(:oystercard) { described_class.new }
-  let(:station) { double :station }
-
+  let(:station_in) { double :station }
+  let(:station_out) { double :station }
   context "card has zero balance" do
     it "checks that it has 0 balance" do
       expect(oystercard.balance).to eq 0
@@ -25,37 +25,44 @@ describe Oystercard do
   describe "#touch_in" do
     it "sets in_journey to true" do
       oystercard.top_up(10)
-      oystercard.touch_in(station)
+      oystercard.touch_in(station_in)
       expect(oystercard.in_journey?).to eq true
     end
 
     it "raises an error if balance is less than MINIMUM_FARE" do
-      expect{ oystercard.touch_in("aldgate") }.to raise_error "Insufficient balance"
+      expect{ oystercard.touch_in(station_in) }.to raise_error "Insufficient balance"
     end
 
     it "remembers the entry station" do
       oystercard.top_up(10)
-      oystercard.touch_in(station)
-      expect(oystercard.entry_station).to eq station
+      oystercard.touch_in(station_in)
+      expect(oystercard.entry_station).to eq station_in
     end
 
   end
 
   describe "#touch_out" do
     it "sets in_journey to false" do
-      oystercard.touch_out
+      oystercard.touch_out(station_out)
       expect(oystercard.in_journey?).to eq false
     end
 
     it "charges the right fare" do
-      expect { oystercard.touch_out }.to change{ oystercard.balance }.by( - Oystercard::MINIMUM_FARE)
+      expect { oystercard.touch_out(station_out) }.to change{ oystercard.balance }.by( - Oystercard::MINIMUM_FARE)
     end
 
     it "resets the entry station" do
       oystercard.top_up(10)
-      oystercard.touch_in(station)
-      oystercard.touch_out
+      oystercard.touch_in(station_in)
+      oystercard.touch_out(station_out)
       expect(oystercard.entry_station).to eq nil
+    end
+
+    it "should store journeys" do
+      oystercard.top_up(10)
+      oystercard.touch_in(station_in)
+      oystercard.touch_out(station_out)
+      expect(oystercard.journeys).to eq [{ station_in: station_in, station_out: station_out }]
     end
   end
 
