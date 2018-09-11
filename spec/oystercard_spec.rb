@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   subject(:oystercard) { described_class.new }
+  let(:station) { double :station }
 
   context "card has zero balance" do
     it "checks that it has 0 balance" do
@@ -24,13 +25,20 @@ describe Oystercard do
   describe "#touch_in" do
     it "sets in_journey to true" do
       oystercard.top_up(10)
-      oystercard.touch_in
+      oystercard.touch_in(station)
       expect(oystercard.in_journey?).to eq true
     end
 
     it "raises an error if balance is less than MINIMUM_FARE" do
-      expect{ oystercard.touch_in }.to raise_error "Insufficient balance"
+      expect{ oystercard.touch_in("aldgate") }.to raise_error "Insufficient balance"
     end
+
+    it "remembers the entry station" do
+      oystercard.top_up(10)
+      oystercard.touch_in(station)
+      expect(oystercard.entry_station).to eq station
+    end
+
   end
 
   describe "#touch_out" do
@@ -41,6 +49,13 @@ describe Oystercard do
 
     it "charges the right fare" do
       expect { oystercard.touch_out }.to change{ oystercard.balance }.by( - Oystercard::MINIMUM_FARE)
+    end
+
+    it "resets the entry station" do
+      oystercard.top_up(10)
+      oystercard.touch_in(station)
+      oystercard.touch_out
+      expect(oystercard.entry_station).to eq nil
     end
   end
 
