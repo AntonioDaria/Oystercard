@@ -9,15 +9,6 @@ describe Oystercard do
     end
   end
 
-  context "card has positive balance" do
-    describe '#pay_fare' do
-      it "deducts money" do
-        oystercard.top_up(10)
-        expect { oystercard.pay_fare 5 }.to change{ oystercard.balance}.by -5
-      end
-    end
-  end
-
   describe "top_up" do
     it "adds money to the oystercard" do
       expect{ oystercard.top_up 10 }.to change{ oystercard.balance }.by 10
@@ -46,6 +37,10 @@ describe Oystercard do
     it "sets in_journey to false" do
       oystercard.touch_out
       expect(oystercard.in_journey?).to eq false
+    end
+
+    it "charges the right fare" do
+      expect { oystercard.touch_out }.to change{ oystercard.balance }.by( - Oystercard::MINIMUM_FARE)
     end
   end
 
