@@ -1,11 +1,15 @@
 class Journey
 
+  attr_reader :station_in, :station_out, :fare_paid
+
   def initialize
     @station_in = nil
     @station_out = nil
+    @fare_paid = nil
   end
 
   def fare
+    @fare_paid = journey_complete? ? 1 : 6
   end
 
   def start_journey(station)
@@ -17,6 +21,7 @@ class Journey
   end
 
   def journey_complete?
+    @station_in && @station_out
   end
 
 end

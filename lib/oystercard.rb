@@ -1,9 +1,9 @@
-require './journey'
+require 'journey'
 
 class Oystercard
   LIMIT = 90
   MINIMUM_FARE = 1
-  attr_reader :balance, :entry_station, :journeys
+  attr_reader :balance, :current_journey, :journeys
 
   def initialize
     @balance = 0
@@ -25,8 +25,8 @@ class Oystercard
 
   def touch_out(station)
     deduct(MINIMUM_FARE)
-    @current_journey.end_journey(station)
-    @journeys << @current_journey
+    @current_journey.end_journey(station) if in_journey?
+    @journeys << @current_journey if in_journey?
     @current_journey = nil
   end
 

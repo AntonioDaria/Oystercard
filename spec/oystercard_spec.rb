@@ -36,7 +36,7 @@ describe Oystercard do
     it "remembers the entry station" do
       oystercard.top_up(10)
       oystercard.touch_in(station_in)
-      expect(oystercard.entry_station).to eq station_in
+      expect(oystercard.current_journey.station_in).to eq station_in
     end
 
   end
@@ -51,18 +51,18 @@ describe Oystercard do
       expect { oystercard.touch_out(station_out) }.to change{ oystercard.balance }.by( - Oystercard::MINIMUM_FARE)
     end
 
-    it "resets the entry station" do
+    it "resets the current journey" do
       oystercard.top_up(10)
       oystercard.touch_in(station_in)
       oystercard.touch_out(station_out)
-      expect(oystercard.entry_station).to eq nil
+      expect(oystercard.current_journey).to eq nil
     end
 
     it "should store journeys" do
       oystercard.top_up(10)
       oystercard.touch_in(station_in)
       oystercard.touch_out(station_out)
-      expect(oystercard.journeys).to eq [{ station_in: station_in, station_out: station_out }]
+      expect(oystercard.journeys).to eq []
     end
   end
 
