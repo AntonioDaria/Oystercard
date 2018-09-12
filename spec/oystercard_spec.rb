@@ -10,7 +10,7 @@ describe Oystercard do
     end
   end
 
-  describe "top_up" do
+  describe "#top_up" do
     it "adds money to the oystercard" do
       expect{ oystercard.top_up 10 }.to change{ oystercard.balance }.by 10
     end
