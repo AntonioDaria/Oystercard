@@ -2,8 +2,12 @@ require 'oystercard'
 
 describe Oystercard do
   subject(:oystercard) { described_class.new }
+  subject(:journey_oyster) { described_class.new(mock_journey) }
   let(:station_in) { double :station }
   let(:station_out) { double :station }
+  let(:mock_journey) { double :mock_journey }
+  let(:mock_journey_instance) { double :mock_journey_instance }
+
   context "card has zero balance" do
     it "checks that it has 0 balance" do
       expect(oystercard.balance).to eq 0
@@ -59,10 +63,14 @@ describe Oystercard do
     end
 
     it "should store journeys" do
-      oystercard.top_up(10)
-      oystercard.touch_in(station_in)
-      oystercard.touch_out(station_out)
-      expect(oystercard.journeys).to eq []
+      allow(mock_journey).to receive(:new).and_return(mock_journey_instance)
+      allow(mock_journey_instance).to receive(:start_journey)
+      allow(mock_journey_instance).to receive(:end_journey)
+
+      journey_oyster.top_up(10)
+      journey_oyster.touch_in(station_in)
+      journey_oyster.touch_out(station_out)
+      expect(journey_oyster.journeys).to eq [mock_journey_instance]
     end
   end
 
