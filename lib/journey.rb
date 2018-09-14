@@ -5,7 +5,7 @@ class Journey
   def initialize
     @station_in = nil
     @station_out = nil
-    @fare_paid = nil
+    @fare_paid = nil  
   end
 
   def fare

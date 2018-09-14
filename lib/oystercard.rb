@@ -1,4 +1,4 @@
-require 'journey'
+require_relative 'journey'
 
 class Oystercard
   LIMIT = 90
@@ -20,13 +20,19 @@ class Oystercard
 
   def touch_in(station)
     raise "Insufficient balance" if @balance < MINIMUM_FARE
+    if in_journey?
+      deduct
+      @journeys << @current_journey
+      @current_journey = nil
+    end
     @current_journey = @journey_type.new         # Journey object
     @current_journey.start_journey(station)
+
   end
 
   def touch_out(station)
-    deduct(MINIMUM_FARE)
     @current_journey.end_journey(station) if in_journey?
+    deduct
     @journeys << @current_journey if in_journey?
     @current_journey = nil
   end
@@ -37,8 +43,8 @@ class Oystercard
 
   private
 
-  def deduct(fare)
-    @balance -= fare
+  def deduct
+    @balance -= @current_journey.fare
     "Your balance is now £#{@balance}."
   end
 end

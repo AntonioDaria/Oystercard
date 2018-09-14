@@ -43,15 +43,24 @@ describe Oystercard do
       expect(oystercard.current_journey.station_in).to eq station_in
     end
 
+     it "deducts the penalty fare if still in journey" do
+       oystercard.top_up(10)
+       oystercard.touch_in(station_in)
+       expect{ oystercard.touch_in(station_in) }.to change{oystercard.balance}.by(-6)
+     end
   end
 
   describe "#touch_out" do
     it "sets in_journey to false" do
+      oystercard.top_up(10)
+      oystercard.touch_in(station_in)
       oystercard.touch_out(station_out)
       expect(oystercard.in_journey?).to eq false
     end
 
     it "charges the right fare" do
+      oystercard.top_up(10)
+      oystercard.touch_in(station_in)
       expect { oystercard.touch_out(station_out) }.to change{ oystercard.balance }.by( - Oystercard::MINIMUM_FARE)
     end
 
@@ -66,6 +75,7 @@ describe Oystercard do
       allow(mock_journey).to receive(:new).and_return(mock_journey_instance)
       allow(mock_journey_instance).to receive(:start_journey)
       allow(mock_journey_instance).to receive(:end_journey)
+      allow(mock_journey_instance).to receive(:fare).and_return(1)
 
       journey_oyster.top_up(10)
       journey_oyster.touch_in(station_in)
